@@ -25,7 +25,7 @@ void main()
     //ambient
     vec3 ambient = ambient_intensity*ambient_color;
 
-    float alpha=2;
+    float alpha=32;
 
     vec3 direction_to_viewer = normalize(frag_position-camera_position);
     vec3 normal = normalize(interp_normal);
@@ -42,7 +42,7 @@ void main()
 
         vec3 reflect_direction = reflect(direction_to_light, normal);
         float specular_power = max(dot(reflect_direction, direction_to_viewer), 0.0);
-        specular += pow(specular_power,alpha)*vec3(1,0,0);
+        specular += pow(specular_power,alpha)*vec3(1,1,1);
         }
     }
 

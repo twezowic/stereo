@@ -7,6 +7,6 @@ class Light():
         self.color=np.array(color,dtype=np.float32)
 
 def get_lights():
-    return [Light([10,0,0],[0.5,1,0.3]),
-            Light([-10,0,0],[0,1,1]),
-            Light([3,5,0],[0.2,0.2,0.2])]
+    return [
+            Light([-10,0,0],[1,1,1]),
+            Light([10,0,0],[1,1,1])]

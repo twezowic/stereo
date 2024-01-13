@@ -8,7 +8,7 @@ import numpy as np
 import scene_settings
 import shader_utils
 
-
+anaglyph = True
 
 class PhongWindow(moderngl_window.WindowConfig):
 
@@ -41,16 +41,36 @@ class PhongWindow(moderngl_window.WindowConfig):
         self.program["ambient_color"].value=np.average(colors,axis=0)
         self.program["ambient_intensity"].value=len(lights_nparrays)*0.05
 
+    
 
     def render(self, time, frametime):
-        self.ctx.enable_only(moderngl.DEPTH_TEST | moderngl.CULL_FACE)
-        self.ctx.clear(0.2, 0.2, 0.2, 0.0)
-
         print(self.camera.position)
         print(self.camera.dir)
         self.camera.look_at([0.1,0.0,0.0])
-
         self.camera_pos.write(self.camera.position.astype('float32')) # how to lose 2 hours debugging
         self.program["projection"].write(self.camera.projection.matrix)
         self.program["view"].write(self.camera.matrix)
+
+        self.ctx.enable_only(moderngl.DEPTH_TEST | moderngl.CULL_FACE)
+        self.ctx.clear(0.2, 0.2, 0.2, 0.0)
+        #render red
+        if anaglyph:
+            self.ctx.fbo.depth_mask=False
+            self.ctx.fbo.color_mask=(True,False,False,True)
+            self.instance.render(moderngl.TRIANGLES)
+
+            # move camera
+            self.camera.position.x-=0.03
+            self.camera_pos.write(self.camera.position.astype('float32')) # how to lose 2 hours debugging
+            self.program["projection"].write(self.camera.projection.matrix)
+            self.program["view"].write(self.camera.matrix)
+
+            #render other 2
+            self.ctx.fbo.depth_mask=True
+            self.ctx.fbo.color_mask=(False,True,True,True)
         self.instance.render(moderngl.TRIANGLES)
+
+        #bring back color mask or it will flicker idk
+        self.ctx.fbo.color_mask=(True,True,True,True)
+        if anaglyph:
+            self.camera.position.x+=0.03
