@@ -21,7 +21,7 @@ class GkomApp(moderngl_window.WindowConfig):
         self.program = self.get_program()
         self.init_shaders_variables()
         self.scene = self.load_scene('suzanne.obj')
-        self.lights = scene_settings.get_lights();
+        self.lights = scene_settings.get_lights()
         self.instance = self.scene.root_nodes[0].mesh.vao.instance(self.program)
         self.camera = moderngl_window.scene.KeyboardCamera(self.wnd.keys,fov=45.0,aspect_ratio=self.wnd.aspect_ratio,near=0.1,far=1000.0)
         self.camera.set_position(0,0,5)
@@ -33,22 +33,20 @@ class GkomApp(moderngl_window.WindowConfig):
         return program
 
     def init_shaders_variables(self):
-        # get projection and view matrix references
-        self.proj_matrix = self.program["projection"]
-        self.view_matrix = self.program["view"]
 
+        self.camera_pos = self.program["camera_position"]
 
         # make point lights form config
         lights_nparrays = scene_settings.get_lights()
+        self.program["light_count"].value=len(lights_nparrays)
         for idx,point_light in enumerate(lights_nparrays):
             self.program[f"point_lights[{idx}].pos"].write(point_light.pos)
             self.program[f"point_lights[{idx}].color"].write(point_light.color)
-        self.program["light_count"].value=len(lights_nparrays)
         
         # ambient lighting settings
         colors = [x.color for x in lights_nparrays]
-        self.program["ambient_color"].write(np.average(colors,axis=0))
-        self.program["ambient_intensity"].value=len(lights_nparrays)*0.1;
+        self.program["ambient_color"].value=np.average(colors,axis=0)
+        self.program["ambient_intensity"].value=len(lights_nparrays)*0.05
 
 
     
@@ -71,9 +69,9 @@ class GkomApp(moderngl_window.WindowConfig):
         print(self.camera.dir)
         self.camera.look_at([0.1,0.0,0.0])
 
-        
-        self.proj_matrix.write(self.camera.projection.matrix)
-        self.view_matrix.write(self.camera.matrix)
+        self.camera_pos.write(self.camera.position.astype('float32')) # how to lose 2 hours debugging
+        self.program["projection"].write(self.camera.projection.matrix)
+        self.program["view"].write(self.camera.matrix)
         self.instance.render(moderngl.TRIANGLES)
 
 GkomApp.run()

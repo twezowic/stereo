@@ -5,7 +5,8 @@ in vec3 in_position;
 in vec3 in_normal;
 
 // this is automatically interpolated, could add "flat" to disable it
-out vec3 interp_normal;
+smooth out vec3 interp_normal;
+smooth out vec3 frag_position;
 
 uniform mat4 projection;
 uniform mat4 view;
@@ -13,9 +14,7 @@ uniform mat4 view;
 
 void main() {
     interp_normal = in_normal;
+    frag_position=in_position;
 
-
-    for (int i=0;i<5;i=i+1) {
-        gl_Position = projection * view * vec4(in_position, 1.0);
-    }
+    gl_Position = projection * view * vec4(in_position, 1.0);
 }
