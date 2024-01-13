@@ -1,6 +1,7 @@
 # zmodyfikowany kod z WMM lab 8
 import os
 from dataclasses import dataclass
+from typing import Dict
 
 
 @dataclass
@@ -43,7 +44,7 @@ def _load_shader(shader_path: str) -> str:
     return shader_text
 
 
-def get_shaders(shader_directory_path: str) -> dict[str, ShaderCollection]:
+def get_shaders(shader_directory_path: str) -> Dict[str, ShaderCollection]:
     shaders = {}
     gathered_files = _gather_shader_files(shader_directory_path)
 
