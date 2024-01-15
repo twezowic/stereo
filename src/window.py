@@ -22,10 +22,10 @@ class GkomApp(PhongWindow):
         self.perspecitve_camera = PerspectiveCamera(self.wnd.keys,fov=45.0,aspect_ratio=self.wnd.aspect_ratio,near=0.1,far=1000.0)
 
         #stereo setup
-        self.left_camera = StereoCamera(self.wnd.keys, fov=45.0, aspect_ratio=self.wnd.aspect_ratio, near=0.1, far=1000.0)
+        self.left_camera = StereoCamera(self.wnd.keys, fov=45.0, aspect_ratio=self.wnd.aspect_ratio/2, near=0.1, far=1000.0)
         self.left_camera.set_position(0, 0, 5)
 
-        self.right_camera = StereoCamera(self.wnd.keys, fov=45.0, aspect_ratio=self.wnd.aspect_ratio, near=0.1, far=1000.0)
+        self.right_camera = StereoCamera(self.wnd.keys, fov=45.0, aspect_ratio=self.wnd.aspect_ratio/2, near=0.1, far=1000.0)
         self.right_camera.set_position(0, 0, 5)
 
         self.cameras = [self.left_camera, self.right_camera]
@@ -112,7 +112,6 @@ class GkomApp(PhongWindow):
             self.ctx.clear(0.2, 0.2, 0.2, 0.0)
             #render red
             if self.anaglyph:
-                self.ctx.fbo.depth_mask=False
                 self.ctx.fbo.color_mask=(True,False,False,True)
                 self.instance.render(moderngl.TRIANGLES)
 
@@ -123,7 +122,11 @@ class GkomApp(PhongWindow):
                 self.program["view"].write(self.camera.matrix)
 
                 #render other 2
-                self.ctx.fbo.depth_mask=True
+                # clear depth buffer, but dont touch color buffer!!
+                self.ctx.fbo.color_mask=(False,False,False,False)
+                self.ctx.fbo.clear(depth=1)
+
+                # now work on the other 2 channels
                 self.ctx.fbo.color_mask=(False,True,True,True)
             self.instance.render(moderngl.TRIANGLES)
 
