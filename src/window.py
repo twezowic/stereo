@@ -7,6 +7,7 @@ from camera import PerspectiveCamera, StereoCamera
 from pyrr import matrix44
 import os
 import pywavefront #for pipreqs
+from PIL import Image
 
 from phong_window import PhongWindow
 
@@ -20,12 +21,13 @@ class GkomApp(PhongWindow):
         super().__init__(ctx,wnd,timer)
         #perspective setup
         self.perspecitve_camera = PerspectiveCamera(self.wnd.keys,fov=45.0,aspect_ratio=self.wnd.aspect_ratio,near=0.1,far=1000.0)
+        self.perspecitve_camera.set_position(0,0,5)
 
         #stereo setup
-        self.left_camera = StereoCamera(self.wnd.keys, fov=45.0, aspect_ratio=self.wnd.aspect_ratio, near=0.1, far=1000.0)
+        self.left_camera = StereoCamera(self.wnd.keys, fov=22.5, aspect_ratio=self.wnd.aspect_ratio/2, near=0.1, far=1000.0)
         self.left_camera.set_position(0, 0, 5)
 
-        self.right_camera = StereoCamera(self.wnd.keys, fov=45.0, aspect_ratio=self.wnd.aspect_ratio, near=0.1, far=1000.0)
+        self.right_camera = StereoCamera(self.wnd.keys, fov=22.5, aspect_ratio=self.wnd.aspect_ratio/2, near=0.1, far=1000.0)
         self.right_camera.set_position(0, 0, 5)
 
         self.cameras = [self.left_camera, self.right_camera]
@@ -52,7 +54,45 @@ class GkomApp(PhongWindow):
              self.camera.key_input(key,action,modifiers)
         if key == self.wnd.keys.SPACE and action == self.wnd.keys.ACTION_PRESS:
             self.toggle_camera_type()
+        elif key == self.wnd.keys.M and action == self.wnd.keys.ACTION_PRESS:
+            if self.camera_type == 'stereo':
+                self.save_image(double=True)
+            else:
+                self.save_image(anaglyph=True)
+
         return super().key_event(key, action, modifiers)
+
+    def save_image(self, anaglyph=False, double=False, przelot=False):
+        fbo = self.ctx.simple_framebuffer(self.wnd.size, components=3)
+        fbo.use()
+        self.render(0, 0)
+        pixels = fbo.read(components=3)
+
+        image = Image.frombytes("RGB", self.wnd.size, pixels)
+        image = image.transpose(Image.FLIP_TOP_BOTTOM)
+
+        print(double)
+
+        if anaglyph:
+            image.save("anaglyph.png")
+        elif double:
+            image.save("image.png")
+            width, height= fbo.size
+            self.crop_camera_image(width, height)
+        #TODO przelot
+
+    def crop_camera_image(self,width, height):
+        image_path = "image.png"
+        image = Image.open(image_path)
+
+        width, height = image.size
+
+        left_camera = image.crop((0, 0, width // 2, height))
+        left_camera.save("left_camera.png")
+
+        right_camera = image.crop((width // 2, 0, width, height))
+        right_camera.save("right_camera.png")
+        os.remove(image_path)
 
     def toggle_camera_type(self):
         if self.camera_type == 'perspective':
@@ -100,8 +140,8 @@ class GkomApp(PhongWindow):
 
             self.ctx.viewport = (0, 0, self.wnd.buffer_width, self.wnd.buffer_height)
         else:
-            print(self.camera.position)
-            print(self.camera.dir)
+            # print(self.camera.position)
+            # print(self.camera.dir)
             self.camera = self.perspecitve_camera
             self.camera.look_at([0.1,0.0,0.0])
             self.camera_pos.write(self.camera.position.astype('float32')) # how to lose 2 hours debugging
