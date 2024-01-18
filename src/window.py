@@ -93,8 +93,11 @@ class GkomApp(PhongWindow):
     def toggle_camera_type(self):
         if self.camera_type == 'perspective':
             self.camera_type = 'stereo'
+            self.cameras[0].position = self.cameras[2].position
+            self.cameras[1].position = self.cameras[2].position
         else:
             self.camera_type = 'perspective'
+            self.cameras[2].position = self.cameras[0].position
 
     def mouse_drag_event(self, x, y, dx, dy):
         for camera in self.cameras:
