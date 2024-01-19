@@ -51,15 +51,16 @@ class GkomApp(PhongWindow):
         elif key == self.wnd.keys.M and action == self.wnd.keys.ACTION_PRESS:
             self.save_image()
 
-        elif key == self.wnd.keys.P and action == self.wnd.keys.ACTION_PRESS:
+        elif key == self.wnd.keys.O and action == self.wnd.keys.ACTION_PRESS and not self.przelot:
             self.anaglyph = not self.anaglyph
+        elif key == self.wnd.keys.P and action == self.wnd.keys.ACTION_PRESS and not self.anaglyph:
+            self.przelot = not self.przelot
 
         elif key == self.wnd.keys.K and action == self.wnd.keys.ACTION_PRESS:
-            self.cameras['stereo'].left_camera.position.x -= 1
-            self.cameras['stereo'].right_camera.position.x += 1
+            self.cameras['stereo'].narrow()
         elif key == self.wnd.keys.L and action == self.wnd.keys.ACTION_PRESS:
-            self.cameras['stereo'].left_camera.position.x += 1
-            self.cameras['stereo'].right_camera.position.x -= 1
+            self.cameras['stereo'].extend()
+
         else:
             for camera in self.cameras.values():
                 camera.key_input(key, action, modifiers)

@@ -37,3 +37,10 @@ class StereoCamera():
         self.right_camera.position.y = pos.y
         self.right_camera.position.z = pos.z
         self.right_camera.position.x = pos.x - self.eye_distance/2
+
+    def narrow(self):
+        self.left_camera.position.x -= 1
+        self.right_camera.position.x += 1
+    def extend(self):
+        self.left_camera.position.x += 1
+        self.right_camera.position.x -= 1
