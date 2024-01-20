@@ -41,8 +41,8 @@ class GkomApp(PhongWindow):
 
         #others
         self.cameras[self.camera_type].mouse_sensitivity=0.3
-        self.eye_spacing = 0.02 # for 3d
-        self.focus_angle = 0.05
+        self.eye_spacing = 0.1 # for 3d
+        self.focus_angle = 0.7
 
         self.wnd.mouse_exclusivity = True
 
@@ -75,10 +75,10 @@ class GkomApp(PhongWindow):
             camera.key_input(key, action, modifiers)
 
         if key == self.wnd.keys.EQUAL and action == self.wnd.keys.ACTION_PRESS:
-            self.focus_angle+=0.01
+            self.focus_angle+=0.1
             print("focus angle:",self.focus_angle)
         if key == self.wnd.keys.MINUS and action == self.wnd.keys.ACTION_PRESS:
-            self.focus_angle-=0.01
+            self.focus_angle-=0.1
             print("focus angle:",self.focus_angle)
 
         return super().key_event(key, action, modifiers)
