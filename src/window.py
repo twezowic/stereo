@@ -49,9 +49,6 @@ class GkomApp(PhongWindow):
         self.anaglyph = True
         self.przelot = False
 
-
-
-
     def key_event(self, key, action, modifiers):
         if key == self.wnd.keys.SPACE and action == self.wnd.keys.ACTION_PRESS:
             self.toggle_camera_type()

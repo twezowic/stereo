@@ -43,11 +43,11 @@ class StereoCamera():
 
     def setup_intersection(self):
         cos = (self.eye_distance / 2) / self.convergence
-        angle = math.degrees(math.acos(cos))
+        angle = 90 - math.degrees(math.acos(cos))
         print(angle)
         print(self.left_camera.yaw)
-        self.left_camera.yaw += angle
-        self.right_camera.yaw -= angle
+        self.left_camera.yaw -= angle
+        self.right_camera.yaw += angle
         print('left')
         print(self.left_camera.yaw)
         return angle
@@ -61,8 +61,12 @@ class StereoCamera():
             self.right_camera.yaw += 1
 
     def narrow(self):
-        self.left_camera.position.x -= 1
-        self.right_camera.position.x += 1
+        if self.left_camera.position.x > self.right_camera.position.x:
+            self.left_camera.position.x -= 1
+            self.right_camera.position.x += 1
+            print(self.left_camera.position.x)
+            print(self.right_camera.position.x)
+
     def extend(self):
         self.left_camera.position.x += 1
         self.right_camera.position.x -= 1
