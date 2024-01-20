@@ -14,7 +14,7 @@ class PhongWindow(moderngl_window.WindowConfig):
         super().__init__(ctx, wnd, timer, **kwargs)
         self.program = self.get_program()
         self.init_shaders_variables()
-        self.scene = self.load_scene('suzanne.obj')
+        self.scene = self.load_scene('complex.obj')
         self.lights = scene_settings.get_lights()
         self.instance = self.scene.root_nodes[0].mesh.vao.instance(self.program)
 
