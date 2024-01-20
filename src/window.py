@@ -8,6 +8,7 @@ from pyrr import matrix44
 import os
 import pywavefront #for pipreqs
 from PIL import Image
+import math
 
 from phong_window import PhongWindow
 
@@ -30,7 +31,7 @@ class GkomApp(PhongWindow):
         right_camera = StereoCameraComponent(self.wnd.keys, fov=45.0, aspect_ratio=self.wnd.aspect_ratio/2, near=0.1, far=1000.0)
         right_camera.set_position(0, 0, 5)
 
-        self.stereo_camera = StereoCamera(left_camera, right_camera,eye_distance=0.0)
+        self.stereo_camera = StereoCamera(left_camera, right_camera,eye_distance=0.9945*2,convergence=1)
 
 
         self.cameras = {'stereo':self.stereo_camera, 'perspective':self.perspective_camera}
@@ -60,6 +61,11 @@ class GkomApp(PhongWindow):
             self.cameras['stereo'].narrow()
         elif key == self.wnd.keys.L and action == self.wnd.keys.ACTION_PRESS:
             self.cameras['stereo'].extend()
+
+        elif key == self.wnd.keys.R and action == self.wnd.keys.ACTION_PRESS:
+            self.cameras['stereo'].modify_convergence()
+        elif key == self.wnd.keys.T and action == self.wnd.keys.ACTION_PRESS:
+            self.cameras['stereo'].modify_convergence(isadd=True)
 
         else:
             for camera in self.cameras.values():
