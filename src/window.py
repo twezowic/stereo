@@ -39,15 +39,22 @@ class GkomApp(PhongWindow):
         self.camera_type = 'perspective'
 
         #others
+        self.cameras[self.camera_type].mouse_sensitivity=0.3
+        self.eye_spacing = 0.02 # for 3d
+        self.focus_angle = 0.05
+
         self.wnd.mouse_exclusivity = True
 
-        self.anaglyph = False
+        self.anaglyph = True
         self.przelot = False
+
+
 
 
     def key_event(self, key, action, modifiers):
         if key == self.wnd.keys.SPACE and action == self.wnd.keys.ACTION_PRESS:
             self.toggle_camera_type()
+
         elif key == self.wnd.keys.M and action == self.wnd.keys.ACTION_PRESS:
             self.save_image()
 
@@ -61,9 +68,15 @@ class GkomApp(PhongWindow):
         elif key == self.wnd.keys.L and action == self.wnd.keys.ACTION_PRESS:
             self.cameras['stereo'].extend()
 
-        else:
-            for camera in self.cameras.values():
-                camera.key_input(key, action, modifiers)
+        for camera in self.cameras.values():
+            camera.key_input(key, action, modifiers)
+        
+        if key == self.wnd.keys.EQUAL and action == self.wnd.keys.ACTION_PRESS:
+            self.focus_angle+=0.01
+            print("focus angle:",self.focus_angle)
+        if key == self.wnd.keys.MINUS and action == self.wnd.keys.ACTION_PRESS:
+            self.focus_angle-=0.01
+            print("focus angle:",self.focus_angle)
 
         return super().key_event(key, action, modifiers)
 
@@ -142,25 +155,40 @@ class GkomApp(PhongWindow):
 
             self.ctx.viewport = (0, 0, self.wnd.buffer_width, self.wnd.buffer_height)
         else:
-            # print(self.cameras[2].position)
-            # print(self.cameras[2].dir)
-            self.cameras['perspective'].look_at([0.1,0.0,0.0])
-            self.camera_pos.write(self.cameras['perspective'].position.astype('float32')) # how to lose 2 hours debugging
-            self.program["projection"].write(self.cameras['perspective'].projection.matrix)
-            self.program["view"].write(self.cameras['perspective'].matrix)
+            # print(self.camera.dir)
+            self.camera = self.cameras["perspective"]
+            #self.camera.look_at([0.1,0.0,0.0])
 
             self.ctx.enable_only(moderngl.DEPTH_TEST | moderngl.CULL_FACE)
             self.ctx.clear(0.2, 0.2, 0.2, 0.0)
             #render red
             if self.anaglyph:
+
+                # move camera to right eye
+                self.camera.position.x-=self.camera.dir[2]*self.eye_spacing
+                self.camera.position.z+=self.camera.dir[0]*self.eye_spacing
+                # rotate to look at focus point
+                self.camera.set_rotation(self.camera.yaw-self.focus_angle,self.camera.pitch)
+
+                self.camera_pos.write(self.camera.position.astype('float32')) # how to lose 2 hours debugging
+                self.program["projection"].write(self.camera.projection.matrix)
+                self.program["view"].write(self.camera.matrix)
+
                 self.ctx.fbo.color_mask=(True,False,False,True)
                 self.instance.render(moderngl.TRIANGLES)
 
-                # move camera
-                self.cameras['perspective'].position.x-=0.03
-                self.camera_pos.write(self.cameras['perspective'].position.astype('float32')) # how to lose 2 hours debugging
-                self.program["projection"].write(self.cameras['perspective'].projection.matrix)
-                self.program["view"].write(self.cameras['perspective'].matrix)
+                #unrotate
+                self.camera.set_rotation(self.camera.yaw+self.focus_angle,self.camera.pitch)
+                # move camera to left eye
+                self.camera.position.x+=2*self.camera.dir[2]*self.eye_spacing
+                self.camera.position.z-=2*self.camera.dir[0]*self.eye_spacing
+
+                # rotate for right eye
+                self.camera.set_rotation(self.camera.yaw+self.focus_angle,self.camera.pitch)
+
+                self.camera_pos.write(self.camera.position.astype('float32')) # how to lose 2 hours debugging
+                self.program["projection"].write(self.camera.projection.matrix)
+                self.program["view"].write(self.camera.matrix)
 
                 #render other 2
                 # clear depth buffer, but dont touch color buffer!!
@@ -174,7 +202,12 @@ class GkomApp(PhongWindow):
             #bring back color mask or it will flicker idk
             self.ctx.fbo.color_mask=(True,True,True,True)
             if self.anaglyph:
-                self.cameras['perspective'].position.x+=0.03
+                #unrotate
+                self.camera.set_rotation(self.camera.yaw-self.focus_angle,self.camera.pitch)
+                self.camera.position.x-=self.camera.dir[2]*self.eye_spacing
+                self.camera.position.z+=self.camera.dir[0]*self.eye_spacing
+
+                # rotate to normal angle 
 
     #def resize(self, w, h):
         #print("resize")
