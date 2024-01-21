@@ -125,6 +125,11 @@ class GkomApp(PhongWindow):
                 self.cameras['stereo'].right_camera.position
                 )
 
+    def render_all_meshes(self):
+        for mesh in self.scene.meshes:
+            self.update_current_material(mesh)
+            self.instance = mesh.vao.instance(self.program)
+            self.instance.render(moderngl.TRIANGLES) 
 
     def mouse_drag_event(self, x, y, dx, dy):
         for camera in self.cameras.values():
@@ -132,9 +137,11 @@ class GkomApp(PhongWindow):
         return super().mouse_drag_event(x, y, dx, dy)
 
     def render(self, time, frametime):
+        self.ctx.fbo.color_mask=(True,True,True,True)
+        self.ctx.enable_only(moderngl.DEPTH_TEST | moderngl.CULL_FACE)
+        self.ctx.clear(0.2, 0.2, 0.2, 0.0)
+
         if self.camera_type == 'stereo':
-            self.ctx.enable_only(moderngl.DEPTH_TEST | moderngl.CULL_FACE)
-            self.ctx.clear(0.2, 0.2, 0.2, 0.0)
 
             # Set left eye
             self.cameras['stereo'].left_camera.look_at([0.1,0.0,0.0])
@@ -144,7 +151,7 @@ class GkomApp(PhongWindow):
 
             # Render left eye
             self.ctx.viewport = (0, 0, self.wnd.buffer_width // 2, self.wnd.buffer_height)
-            self.instance.render(moderngl.TRIANGLES)
+            self.render_all_meshes()
 
             # Set right eye
             self.cameras['stereo'].right_camera.look_at([0.1, 0.0, 0.0])
@@ -154,16 +161,13 @@ class GkomApp(PhongWindow):
 
             # Render right eye
             self.ctx.viewport = (self.wnd.buffer_width // 2, 0, self.wnd.buffer_width // 2, self.wnd.buffer_height)
-            self.instance.render(moderngl.TRIANGLES)
+            self.render_all_meshes()
 
             self.ctx.viewport = (0, 0, self.wnd.buffer_width, self.wnd.buffer_height)
         else:
             # print(self.camera.dir)
             self.camera = self.cameras["perspective"]
             #self.camera.look_at([0.1,0.0,0.0])
-
-            self.ctx.enable_only(moderngl.DEPTH_TEST | moderngl.CULL_FACE)
-            self.ctx.clear(0.2, 0.2, 0.2, 0.0)
             #render red
             if self.anaglyph:
 
@@ -178,7 +182,7 @@ class GkomApp(PhongWindow):
                 self.program["view"].write(self.camera.matrix)
 
                 self.ctx.fbo.color_mask=(True,False,False,True)
-                self.instance.render(moderngl.TRIANGLES)
+                self.render_all_meshes()
 
                 #unrotate
                 self.camera.set_rotation(self.camera.yaw+self.focus_angle,self.camera.pitch)
@@ -200,10 +204,8 @@ class GkomApp(PhongWindow):
 
                 # now work on the other 2 channels
                 self.ctx.fbo.color_mask=(False,True,True,True)
-            self.instance.render(moderngl.TRIANGLES)
 
-            #bring back color mask or it will flicker idk
-            self.ctx.fbo.color_mask=(True,True,True,True)
+            self.render_all_meshes()
             if self.anaglyph:
                 #unrotate
                 self.camera.set_rotation(self.camera.yaw-self.focus_angle,self.camera.pitch)

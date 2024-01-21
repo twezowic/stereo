@@ -15,8 +15,9 @@ class PhongWindow(moderngl_window.WindowConfig):
     def __init__(self, ctx: moderngl.Context = None, wnd: BaseWindow = None, timer: BaseTimer = None, **kwargs):
         super().__init__(ctx, wnd, timer, **kwargs)
         self.program = self.get_program()
-        self.init_shaders_variables(material_path='../resources/complex.obj', material_name='Material.001')
-        self.scene = self.load_scene('complex.obj')
+        self.init_shaders_variables(material_path='../resources/scena_full.obj', material_name='Material.001')
+        self.scene = self.load_scene('scena_full.obj')
+        self.pywavefront_scene = pywavefront.Wavefront('../resources/scena_full.obj', collect_faces=True)
         self.lights = scene_settings.get_lights()
         self.instance = self.scene.root_nodes[0].mesh.vao.instance(self.program)
 
@@ -26,7 +27,7 @@ class PhongWindow(moderngl_window.WindowConfig):
                                    vertex_shader=shaders['phong'].vertex_shader)
         return program
 
-    def init_shaders_variables(self, material_path='../resources/complex.obj', material_name='Material.001'):
+    def init_shaders_variables(self, material_path='../resources/scena_full.obj', material_name='Material.001'):
         self.camera_pos = self.program["camera_position"]
 
         # make point lights form config
@@ -36,7 +37,8 @@ class PhongWindow(moderngl_window.WindowConfig):
             self.program[f"point_lights[{idx}].pos"].write(point_light.pos)
             self.program[f"point_lights[{idx}].color"].write(point_light.color)
 
-        material_properties = self.get_material_properties(material_path, material_name)
+    def update_current_material(self, current_mesh):
+        material_properties = self.get_material_properties(current_mesh)
 
         # set material properties in shader
         self.program["Ka"].value = material_properties["Ka"]
@@ -44,11 +46,11 @@ class PhongWindow(moderngl_window.WindowConfig):
         self.program["Ks"].value = material_properties["Ks"]
         self.program["Ns"].value = material_properties["Ns"]
 
-    def get_material_properties(self, path, name='Material'):
-        scene = pywavefront.Wavefront(path, collect_faces=True)
+    def get_material_properties(self, mesh):
+        # Get the material properties for mesh in current scene
 
-        # Get the material properties
-        material = scene.materials["Material.001"]  # Replace 'material_name' with the name of your material
+        print(mesh.name)
+        material = self.pywavefront_scene.meshes[mesh.name].materials[0]  # Replace 'material_name' with the name of your material
         Ka = tuple(material.ambient)[:3]
         Kd = tuple(material.diffuse)[:3]
         Ks = tuple(material.specular)[:3]
