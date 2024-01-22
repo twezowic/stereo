@@ -37,7 +37,7 @@ class GkomApp(PhongWindow):
         self.cameras = {'stereo':self.stereo_camera, 'perspective':self.perspective_camera}
 
         #setup active camera
-        self.camera_type = 'perspective'
+        self.camera_type = 'stereo'
 
         #others
         self.cameras[self.camera_type].mouse_sensitivity=0.3

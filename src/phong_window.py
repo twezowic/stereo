@@ -20,6 +20,16 @@ class PhongWindow(moderngl_window.WindowConfig):
         self.pywavefront_scene = pywavefront.Wavefront('../resources/scena_full.obj', collect_faces=True)
         self.lights = scene_settings.get_lights()
         self.instance = self.scene.root_nodes[0].mesh.vao.instance(self.program)
+        self.load_texture(os.path.dirname(os.path.realpath(__file__)) + '/../resources/example.jpg')  # Dodane
+        
+
+    def load_texture(self, file_path):
+        # Wczytaj teksturę
+        from PIL import Image
+        image = np.array(Image.open(file_path).convert('RGBA')) 
+        texture = self.ctx.texture(image.shape[1::-1], 4, image.tobytes())
+        texture.use()
+
 
     def get_program(self):
         shaders = shader_utils.get_shaders(os.path.dirname(os.path.realpath(__file__)) + '/../resources/shader/')

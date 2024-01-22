@@ -5,7 +5,11 @@ out vec4 f_color; // when there is only one output, it gets recognised as locati
 
 smooth in vec3 frag_position;
 smooth in vec3 interp_normal;
+smooth in vec2 tex_coords;
+
 uniform vec3 camera_position;
+
+uniform sampler2D textureSampler; 
 
 struct Light
 {
@@ -50,6 +54,7 @@ void main()
     }
 
     vec3 color_sum = ambient+diffuse+specular;
-
+    vec4 textureColor = texture(textureSampler, tex_coords);
+    color_sum *= textureColor.rgb; 
     f_color = vec4(color_sum, 1.0);
 }
