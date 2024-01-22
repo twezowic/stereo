@@ -59,7 +59,7 @@ class PhongWindow(moderngl_window.WindowConfig):
     def get_material_properties(self, mesh):
         # Get the material properties for mesh in current scene
 
-        print(mesh.name)
+        
         material = self.pywavefront_scene.meshes[mesh.name].materials[0]  # Replace 'material_name' with the name of your material
         Ka = tuple(material.ambient)[:3]
         Kd = tuple(material.diffuse)[:3]
