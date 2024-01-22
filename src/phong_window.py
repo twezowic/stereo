@@ -14,8 +14,10 @@ class PhongWindow(moderngl_window.WindowConfig):
 
     def __init__(self, ctx: moderngl.Context = None, wnd: BaseWindow = None, timer: BaseTimer = None, **kwargs):
         super().__init__(ctx, wnd, timer, **kwargs)
-        self.program = self.get_program()
-        self.init_shaders_variables(material_path='../resources/scena_full.obj', material_name='Material.001')
+        self.program2,self.program = self.get_program()
+        self.init_shaders_variables()
+        self.switch_program()
+        self.init_shaders_variables()
         self.scene = self.load_scene('scena_full.obj')
         self.pywavefront_scene = pywavefront.Wavefront('../resources/scena_full.obj', collect_faces=True)
         self.lights = scene_settings.get_lights()
@@ -31,13 +33,19 @@ class PhongWindow(moderngl_window.WindowConfig):
         texture.use()
 
 
+    def switch_program(self):
+        self.program,self.program2=self.program2,self.program
+
     def get_program(self):
         shaders = shader_utils.get_shaders(os.path.dirname(os.path.realpath(__file__)) + '/../resources/shader/')
         program = self.ctx.program(fragment_shader=shaders['phong'].fragment_shader,
                                    vertex_shader=shaders['phong'].vertex_shader)
-        return program
+        program_modulo = self.ctx.program(fragment_shader=shaders['phong_modulo'].fragment_shader,
+                                   vertex_shader=shaders['phong_modulo'].vertex_shader)
 
-    def init_shaders_variables(self, material_path='../resources/scena_full.obj', material_name='Material.001'):
+        return program,program_modulo
+
+    def init_shaders_variables(self):
         self.camera_pos = self.program["camera_position"]
 
         # make point lights form config

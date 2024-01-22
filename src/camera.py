@@ -5,10 +5,24 @@ class PerspectiveCamera(KeyboardCamera):
     def __init__(self, keys, fov=45.0, aspect_ratio=1.0, near=0.1, far=1000.0):
         super().__init__(keys, fov=fov, aspect_ratio=aspect_ratio, near=near, far=far)
 
+        self.eye_spacing = 0.1 # for 3d
+        self.focus_angle = 0.7
+
     def setup_eye_distance(self, pos1, pos2):
         self.position.y = pos1.y
         self.position.z = pos1.z
         self.position.x = (pos1.x + pos2.x) / 2
+
+
+
+    def narrow(self):
+        self.eye_spacing-=0.01
+    
+    def extend(self):
+        self.eye_spacing+=0.01
+
+    def modify_convergence(self,isadd=True):
+        self.focus_angle+=0.1 if isadd else -0.1
 
 
 class StereoCameraComponent(PerspectiveCamera):
@@ -42,8 +56,7 @@ class StereoCamera():
         self.right_camera.position.x = pos.x - self.eye_distance/2
 
     def setup_intersection(self):
-        cos = (self.eye_distance / 2) / self.convergence
-        angle = 90 - math.degrees(math.acos(cos))
+        angle = self.convergence
         print(angle)
         print(self.left_camera.yaw)
         self.left_camera.yaw -= angle
