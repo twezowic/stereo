@@ -193,7 +193,7 @@ class GkomApp(PhongWindow):
                 # rotate for right eye
                 self.camera.set_rotation(self.camera.yaw+self.focus_angle,self.camera.pitch)
 
-                self.camera_pos.write(self.camera.position.astype('float32')) # how to lose 2 hours debugging
+                self.camera_pos.write(self.camera.position.astype('float32'))
                 self.program["projection"].write(self.camera.projection.matrix)
                 self.program["view"].write(self.camera.matrix)
 
@@ -205,6 +205,10 @@ class GkomApp(PhongWindow):
                 # now work on the other 2 channels
                 self.ctx.fbo.color_mask=(False,True,True,True)
 
+            if not self.anaglyph:
+                self.camera_pos.write(self.camera.position.astype('float32'))
+                self.program["projection"].write(self.camera.projection.matrix)
+                self.program["view"].write(self.camera.matrix)
             self.render_all_meshes()
             if self.anaglyph:
                 #unrotate
