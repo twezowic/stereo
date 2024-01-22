@@ -5,7 +5,7 @@ from moderngl_window.context.base.window import BaseWindow
 from moderngl_window.timers.base import BaseTimer
 import os
 import numpy as np
-
+from PIL import Image
 import scene_settings
 import shader_utils
 
@@ -25,7 +25,7 @@ class PhongWindow(moderngl_window.WindowConfig):
 
     def load_texture(self, file_path):
         # Wczytaj teksturę
-        from PIL import Image
+       
         image = np.array(Image.open(file_path).convert('RGBA')) 
         texture = self.ctx.texture(image.shape[1::-1], 4, image.tobytes())
         texture.use()
