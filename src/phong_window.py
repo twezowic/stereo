@@ -22,7 +22,7 @@ class PhongWindow(moderngl_window.WindowConfig):
         self.pywavefront_scene = pywavefront.Wavefront(os.path.dirname(os.path.realpath(__file__)) + '/../resources/scena_full.obj', collect_faces=True)
         self.lights = scene_settings.get_lights()
         self.instance = self.scene.root_nodes[0].mesh.vao.instance(self.program)
-        self.load_texture(os.path.dirname(os.path.realpath(__file__)) + '/../resources/example.jpg')  # Dodane
+        self.load_texture(os.path.dirname(os.path.realpath(__file__)) + '/../resources/ball.jpg')  # Dodane
         
 
     def load_texture(self, file_path):

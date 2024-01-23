@@ -55,6 +55,8 @@ void main()
 
     vec3 color_sum = ambient+diffuse+specular;
     vec4 textureColor = texture(textureSampler, tex_coords);
-    color_sum *= textureColor.rgb; 
+    if (dot(textureColor.rgb,textureColor.rgb)!=0.0){
+      color_sum *= textureColor.rgb; 
+    }
     f_color = vec4(color_sum, 1.0);
 }
