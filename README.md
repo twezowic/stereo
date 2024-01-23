@@ -17,3 +17,14 @@ W ramach projektu należy stworzyć program, który będzie umożliwiał renderi
     * pojedyncze obrazy dla każdego z oczu
     * anaglif (przynajmniej red-cyan)
     * przelot (obraz przeznaczony dla monitorów z filtrem polaryzacyjnym)
+
+
+# Obsługa
+
+WSAD - poruszanie się
+QE - góra/dół
+myszka - obrót kamery
+RT - zmiana kąta zbieżności oczu
+KL - zmiana rozstawu oczu
+M - zapisanie zdjęcia
+O - wyłączenie anaglifu
