@@ -19,7 +19,7 @@ class PhongWindow(moderngl_window.WindowConfig):
         self.switch_program()
         self.init_shaders_variables()
         self.scene = self.load_scene('scena_full.obj')
-        self.pywavefront_scene = pywavefront.Wavefront('../resources/scena_full.obj', collect_faces=True)
+        self.pywavefront_scene = pywavefront.Wavefront(os.path.dirname(os.path.realpath(__file__)) + '/../resources/scena_full.obj', collect_faces=True)
         self.lights = scene_settings.get_lights()
         self.instance = self.scene.root_nodes[0].mesh.vao.instance(self.program)
         self.load_texture(os.path.dirname(os.path.realpath(__file__)) + '/../resources/example.jpg')  # Dodane
