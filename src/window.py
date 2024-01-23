@@ -17,6 +17,7 @@ moderngl_window.resources.register_dir(os.path.dirname(os.path.realpath(__file__
 class GkomApp(PhongWindow):
     title = "Renderer stereo"
     gl_version = (3, 3)
+    resizable=True
 
     def __init__(self, ctx, wnd, timer):
         super().__init__(ctx,wnd,timer)
