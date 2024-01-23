@@ -23,7 +23,8 @@ W ramach projektu należy stworzyć program, który będzie umożliwiał renderi
 
 WSAD - poruszanie się
 QE - góra/dół
-myszka - obrót kamery
+Myszka - obrót kamery
+Spacja - zmiana trybu kamery między (anaglif,stereo,przeplot)
 RT - zmiana kąta zbieżności oczu
 KL - zmiana rozstawu oczu
 M - zapisanie zdjęcia
